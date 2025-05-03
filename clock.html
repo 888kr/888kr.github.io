@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Precision Countdown</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet">
     <style>
         html, body {
             margin: 0;
@@ -13,7 +20,49 @@
             overflow: hidden;
             background: #111;
             color: #f8f8f8;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Fragment Mono', monospace;
+        }
+        
+        /* Gradient blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.8;
+            z-index: -1;
+            mix-blend-mode: screen;
+        }
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #7b2ff7;
+            top: 20%;
+            left: 10%;
+            animation: float 16s ease-in-out infinite;
+        }
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #2f9ff7;
+            bottom: 20%;
+            right: 10%;
+            animation: float 20s ease-in-out infinite reverse;
+        }
+        .blob-3 {
+            width: 250px;
+            height: 250px;
+            background: #f72f9f;
+            top: 60%;
+            left: 30%;
+            animation: float 14s ease-in-out infinite alternate;
+        }
+        .blob-4 {
+            width: 350px;
+            height: 350px;
+            background: #2ff7b5;
+            top: 30%;
+            right: 25%;
+            animation: float 18s ease-in-out infinite alternate-reverse;
         }
         
         .center-container {
@@ -25,12 +74,23 @@
             width: 100%;
         }
         
+        .current-time {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            font-variant-numeric: tabular-nums;
+        }
+        
         .timer {
             font-size: 6rem;
             font-weight: 200;
-            letter-spacing: -0.05em;
+            letter-spacing: 0.02em;
             margin-bottom: 2rem;
             font-variant-numeric: tabular-nums;
+            color: #e0e0e0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
         }
         
         .timer-options {
@@ -39,34 +99,58 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
-            opacity: 0.6;
+            margin-top: 3rem;
         }
         
         .option {
-            color: inherit;
-            text-decoration: none;
+            color: rgba(255,255,255,0.6);
             font-size: 0.9rem;
-            transition: opacity 0.2s ease;
-            padding: 0 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         
         .option:hover {
-            opacity: 1;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            transform: translateY(-1px);
         }
         
         .separator {
             display: inline-block;
             width: 4px;
             height: 4px;
-            background: currentColor;
+            background: rgba(255,255,255,0.3);
             border-radius: 50%;
-            opacity: 0.4;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(20px, 25px) rotate(5deg) scale(1.05); }
+            50% { transform: translate(0, 40px) rotate(0deg) scale(1); }
+            75% { transform: translate(-20px, 25px) rotate(-5deg) scale(1.05); }
         }
         
         @media (max-width: 600px) {
             .timer {
                 font-size: 4rem;
+            }
+            .current-time {
+                font-size: 1rem;
+            }
+            .option {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+            }
+            .blob {
+                filter: blur(40px);
+            }
+            .blob-1, .blob-2, .blob-3, .blob-4 {
+                width: 150px;
+                height: 150px;
             }
         }
         
@@ -75,11 +159,40 @@
                 background: #f8f8f8;
                 color: #222;
             }
+            .current-time {
+                color: rgba(0, 0, 0, 0.6);
+            }
+            .timer {
+                color: #555;
+                text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .option {
+                color: rgba(0,0,0,0.6);
+                background: rgba(0,0,0,0.08);
+                border-color: rgba(0,0,0,0.05);
+            }
+            .option:hover {
+                background: rgba(0,0,0,0.15);
+                color: rgba(0,0,0,0.9);
+            }
+            .separator {
+                background: rgba(0,0,0,0.3);
+            }
+            .blob {
+                mix-blend-mode: multiply;
+                opacity: 0.6;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    
     <div class="center-container">
+        <div class="current-time" id="current-time"></div>
         <div class="timer" id="timer">05:00</div>
         <div class="timer-options" id="options">
             <a class="option" data-minutes="5">5</a>
@@ -104,70 +217,81 @@
 
     <script>
         const timerEl = document.getElementById('timer');
-        let targetTime = 0;
-        let animationFrameId = 0;
+        const currentTimeEl = document.getElementById('current-time');
+        let countdownInterval;
+        let endTime;
+        let lastUpdateTime = 0;
+        const smoothness = 100; // milliseconds between smooth updates
         
-        // High precision timer using requestAnimationFrame
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            currentTimeEl.textContent = `${hours}:${minutes}`;
+        }
+        
+        function startTimer(minutes) {
+            clearInterval(countdownInterval);
+            
+            const now = Date.now();
+            endTime = now + minutes * 60000;
+            
+            updateTimer(); // Immediate update
+            countdownInterval = setInterval(updateTimer, 1000);
+            
+            // Start smooth animation
+            requestAnimationFrame(smoothUpdate);
+        }
+        
         function updateTimer() {
             const now = Date.now();
-            const remaining = Math.max(0, targetTime - now);
+            const remaining = Math.max(0, endTime - now);
             
             const mins = Math.floor(remaining / 60000).toString().padStart(2, '0');
             const secs = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
             
             timerEl.textContent = `${mins}:${secs}`;
             
-            if (remaining > 0) {
-                animationFrameId = requestAnimationFrame(updateTimer);
-            } else {
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
                 timerEl.textContent = '00:00';
-                // Optional: Add completion effect
-                timerEl.style.animation = 'pulse 0.5s 3';
             }
         }
         
-        function startTimer(minutes) {
-            // Cancel any existing animation frame
-            cancelAnimationFrame(animationFrameId);
+        function smoothUpdate(timestamp) {
+            if (!lastUpdateTime) lastUpdateTime = timestamp;
+            const elapsed = timestamp - lastUpdateTime;
             
-            // Reset animation
-            timerEl.style.animation = 'none';
+            if (elapsed > smoothness) {
+                const now = Date.now();
+                const remaining = Math.max(0, endTime - now);
+                
+                if (remaining > 0) {
+                    // Calculate smooth transition between seconds
+                    const progress = 1 - ((remaining % 1000) / 1000);
+                    timerEl.style.opacity = 0.9 + (0.1 * Math.sin(progress * Math.PI));
+                    timerEl.style.transform = `scale(${1 + (0.005 * Math.sin(progress * Math.PI))})`;
+                    
+                    lastUpdateTime = timestamp;
+                }
+            }
             
-            // Set new target time
-            targetTime = Date.now() + minutes * 60000;
-            
-            // Start updating
-            updateTimer();
+            requestAnimationFrame(smoothUpdate);
         }
         
-        // Add click handlers
         document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', () => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
                 startTimer(parseInt(option.dataset.minutes));
             });
         });
         
+        // Initialize current time and update every minute
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 60000);
+        
         // Start with 5 minutes
         startTimer(5);
-        
-        // Handle tab visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                // When tab becomes visible again, force immediate update
-                cancelAnimationFrame(animationFrameId);
-                updateTimer();
-            }
-        });
-        
-        // Add pulsing animation for when timer completes
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
