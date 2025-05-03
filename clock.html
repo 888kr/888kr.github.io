@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Countdown</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #111;
+            color: #f8f8f8;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .center-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+        
+        .timer {
+            font-size: 6rem;
+            font-weight: 200;
+            letter-spacing: -0.05em;
+            margin-bottom: 2rem;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            opacity: 0.6;
+        }
+        
+        .option {
+            color: inherit;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: opacity 0.2s ease;
+            padding: 0 0.5rem;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            opacity: 1;
+        }
+        
+        .separator {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        
+        @media (max-width: 600px) {
+            .timer {
+                font-size: 4rem;
+            }
+        }
+        
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #f8f8f8;
+                color: #222;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container">
+        <div class="timer" id="timer">05:00</div>
+        <div class="timer-options" id="options">
+            <a class="option" data-minutes="5">5</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="10">10</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="15">15</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="30">30</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="45">45</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="60">60</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="90">90</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="120">120</a>
+            <span class="separator"></span>
+            <a class="option" data-minutes="180">180</a>
+        </div>
+    </div>
+
+    <script>
+        const timerEl = document.getElementById('timer');
+        let targetTime = 0;
+        let animationFrameId = 0;
+        
+        // High precision timer using requestAnimationFrame
+        function updateTimer() {
+            const now = Date.now();
+            const remaining = Math.max(0, targetTime - now);
+            
+            const mins = Math.floor(remaining / 60000).toString().padStart(2, '0');
+            const secs = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
+            
+            timerEl.textContent = `${mins}:${secs}`;
+            
+            if (remaining > 0) {
+                animationFrameId = requestAnimationFrame(updateTimer);
+            } else {
+                timerEl.textContent = '00:00';
+                // Optional: Add completion effect
+                timerEl.style.animation = 'pulse 0.5s 3';
+            }
+        }
+        
+        function startTimer(minutes) {
+            // Cancel any existing animation frame
+            cancelAnimationFrame(animationFrameId);
+            
+            // Reset animation
+            timerEl.style.animation = 'none';
+            
+            // Set new target time
+            targetTime = Date.now() + minutes * 60000;
+            
+            // Start updating
+            updateTimer();
+        }
+        
+        // Add click handlers
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', () => {
+                startTimer(parseInt(option.dataset.minutes));
+            });
+        });
+        
+        // Start with 5 minutes
+        startTimer(5);
+        
+        // Handle tab visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // When tab becomes visible again, force immediate update
+                cancelAnimationFrame(animationFrameId);
+                updateTimer();
+            }
+        });
+        
+        // Add pulsing animation for when timer completes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
