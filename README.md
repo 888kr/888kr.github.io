@@ -1,2 +1,3 @@
 # 888kr.github.io
-statis web page lols
+
+nothing here lol
