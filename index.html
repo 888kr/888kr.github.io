@@ -9,12 +9,25 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <style>
+        /* Permanently hide scrollbars */
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow: -moz-scrollbars-none;
+        }
+        ::-webkit-scrollbar {
+            display: none;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
+            scroll-behavior: smooth;
         }
         
         body {
@@ -22,6 +35,13 @@
             color: #f8f8f8;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             position: relative;
+        }
+        
+        section {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
         }
         
         .center-container {
@@ -111,6 +131,7 @@
             position: fixed;
             color: rgba(255,255,255,0.15);
             font-size: 0.7rem;
+            z-index: 10;
         }
         
         .view-counter { bottom: 12px; left: 12px; }
@@ -124,6 +145,195 @@
             75% { transform: translate(-10px, 15px); }
         }
         
+        /* Scroll down button */
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .scroll-down::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-sizing: border-box;
+        }
+        
+        .scroll-down::after {
+            content: '↓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 20px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            70% { transform: scale(1.5); opacity: 0; }
+            100% { opacity: 0; }
+        }
+        
+        /* Gallery section */
+        #gallery {
+            background: #111;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+            align-content: start;
+            height: 100vh;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #gallery::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .gallery-item {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #7b2ff7;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* Modern Carousel styles */
+        .carousel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .carousel-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .carousel-img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .carousel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+        
+        /* Modern fixed-position arrows */
+        .carousel-nav {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            transition: background-color 0.3s;
+        }
+        
+        .carousel-prev {
+            left: 0;
+        }
+        
+        .carousel-next {
+            right: 0;
+        }
+        
+        .carousel-nav::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            border-top: 3px solid white;
+            border-left: 3px solid white;
+            transform: rotate(-45deg);
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .carousel-next::before {
+            transform: rotate(135deg);
+        }
+        
+        .carousel-nav:hover::before {
+            opacity: 1;
+        }
+        
+        .carousel-nav:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         @media (prefers-color-scheme: light) {
             body {
                 background: #f8f8f8;
@@ -133,23 +343,61 @@
             .region { color: rgba(0,0,0,0.4); }
             .view-counter, .timestamp { color: rgba(0,0,0,0.15); }
             body::before { background-image: radial-gradient(circle, rgba(0,0,0,0.03) 1px, transparent 1px); }
+            .scroll-down::before { border-color: rgba(0,0,0,0.4); }
+            .scroll-down::after { color: rgba(0,0,0,0.8); }
+            #gallery { background: #f8f8f8; }
+            .loading { background: rgba(255,255,255,0.8); }
+            .spinner { border-top-color: #2f9ff7; }
+            .carousel { background: rgba(255,255,255,0.95); }
+            .carousel-close { color: #333; background: rgba(255,255,255,0.5); }
+            .carousel-nav::before { border-color: #333; }
+            .carousel-nav:hover { background-color: rgba(0,0,0,0.05); }
         }
     </style>
 </head>
 <body>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
+    <section id="main">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        
+        <div class="center-container">
+            <h1>888z<span class="cursor"></span></h1>
+            <a href="https://discord.gg/888z" class="discord-link">.gg/888z</a>
+            <div class="region">cool images dump <3</div>
+        </div>
+        
+        <div class="scroll-down" onclick="enableScrolling()"></div>
+        
+        <div class="view-counter">Views: <span id="views">0</span></div>
+        <div class="timestamp">Updated: <span id="timestamp"></span></div>
+    </section>
     
-    <div class="center-container">
-        <h1>888z<span class="cursor"></span></h1>
-        <a href="https://discord.gg/888z" class="discord-link">.gg/888z</a>
-        <div class="region">cs2 premier rage & semi</div>
+    <section id="gallery"></section>
+    
+    <div class="loading" id="loading" style="display: none;">
+        <div class="spinner"></div>
     </div>
     
-    <div class="view-counter">Views: <span id="views">0</span></div>
-    <div class="timestamp">Updated: <span id="timestamp"></span></div>
+    <!-- Modern Carousel Modal -->
+    <div class="carousel" id="carousel">
+        <span class="carousel-close" onclick="closeCarousel()" style="z-index: 1001;">&times;</span>
+        <div class="carousel-content" style="z-index: 1000;">
+            <div class="carousel-nav carousel-prev" onclick="prevImage()"></div>
+            <img class="carousel-img" id="carousel-img" src="" alt="">
+            <div class="carousel-nav carousel-next" onclick="nextImage()"></div>
+        </div>
+    </div>
     
     <script>
+        // Global variables
+        let scrollingEnabled = false;
+        let currentImageIndex = 0;
+        let imageUrls = [];
+        let loadedImageIndices = new Set();
+        let batchSize = 20; // Number of images to load at once
+        let isLoading = false;
+        let observer;
+        
         document.addEventListener('DOMContentLoaded', () => {
             // Cursor animation
             const cursor = document.querySelector('.cursor');
@@ -169,6 +417,170 @@
             // Timestamp
             document.getElementById('timestamp').textContent = 
                 new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'2-digit',year:'2-digit'});
+            
+            // Prevent scrolling by wheel/touch initially
+            document.body.style.overflow = 'hidden';
+            
+            // Set up intersection observer for infinite scroll
+            setupObserver();
+        });
+        
+        function setupObserver() {
+            observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && scrollingEnabled && !isLoading) {
+                    loadMoreImages();
+                }
+            }, { threshold: 0.1 });
+            
+            // Observe a sentinel element at the bottom of the gallery
+            const sentinel = document.createElement('div');
+            sentinel.id = 'sentinel';
+            document.getElementById('gallery').appendChild(sentinel);
+            observer.observe(sentinel);
+        }
+        
+        function enableScrolling() {
+            scrollingEnabled = true;
+            document.body.style.overflow = 'auto';
+            document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+            loadGallery();
+        }
+        
+        // Prevent scrolling when not enabled
+        window.addEventListener('wheel', (e) => {
+            if (!scrollingEnabled) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        window.addEventListener('touchmove', (e) => {
+            if (!scrollingEnabled) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        async function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            const loading = document.getElementById('loading');
+            
+            // Show loading indicator
+            loading.style.display = 'flex';
+            gallery.innerHTML = '';
+            loadedImageIndices.clear();
+            
+            try {
+                // Fetch the info.json file
+                const response = await fetch('https://raw.githubusercontent.com/888kr/888kr.github.io/refs/heads/main/info.json');
+                if (!response.ok) throw new Error('Failed to load gallery');
+                
+                imageUrls = await response.json();
+                
+                // Shuffle the array for random order
+                imageUrls = shuffleArray(imageUrls);
+                
+                // Load initial batch of random images
+                loadMoreImages();
+                
+                // Re-setup observer since we cleared the gallery
+                if (observer) observer.disconnect();
+                setupObserver();
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+                gallery.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.6);">Failed to load gallery. Please try again later.</p>';
+            } finally {
+                // Hide loading indicator
+                loading.style.display = 'none';
+            }
+        }
+        
+        function loadMoreImages() {
+            if (isLoading || loadedImageIndices.size >= imageUrls.length) return;
+            
+            isLoading = true;
+            const gallery = document.getElementById('gallery');
+            const fragment = document.createDocumentFragment();
+            let loadedCount = 0;
+            
+            // Remove sentinel temporarily
+            const sentinel = document.getElementById('sentinel');
+            if (sentinel) sentinel.remove();
+            
+            // Load a batch of random images
+            while (loadedCount < batchSize && loadedImageIndices.size < imageUrls.length) {
+                const nextIndex = loadedImageIndices.size; // Get next index in shuffled array
+                loadedImageIndices.add(nextIndex);
+                loadedCount++;
+                
+                const img = document.createElement('img');
+                img.src = imageUrls[nextIndex];
+                img.className = 'gallery-item';
+                img.loading = 'lazy';
+                img.dataset.index = nextIndex;
+                img.addEventListener('click', () => openCarousel(nextIndex));
+                fragment.appendChild(img);
+            }
+            
+            gallery.appendChild(fragment);
+            
+            // Re-add sentinel if there are more images to load
+            if (loadedImageIndices.size < imageUrls.length) {
+                const newSentinel = document.createElement('div');
+                newSentinel.id = 'sentinel';
+                gallery.appendChild(newSentinel);
+                observer.observe(newSentinel);
+            }
+            
+            isLoading = false;
+        }
+        
+        // Carousel functions
+        function openCarousel(index) {
+            currentImageIndex = parseInt(index);
+            const carousel = document.getElementById('carousel');
+            const carouselImg = document.getElementById('carousel-img');
+            
+            carouselImg.src = imageUrls[currentImageIndex];
+            carousel.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeCarousel() {
+            document.getElementById('carousel').style.display = 'none';
+            if (scrollingEnabled) {
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+            document.getElementById('carousel-img').src = imageUrls[currentImageIndex];
+        }
+        
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+            document.getElementById('carousel-img').src = imageUrls[currentImageIndex];
+        }
+        
+        // Keyboard navigation for carousel
+        document.addEventListener('keydown', (e) => {
+            const carousel = document.getElementById('carousel');
+            if (carousel.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                } else if (e.key === 'Escape') {
+                    closeCarousel();
+                }
+            }
         });
     </script>
 </body>
